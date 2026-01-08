@@ -1,0 +1,22 @@
+{
+  "name": "kopai-integration-examples",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Working integration examples for Kopai observability platform",
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,jsx,mjs}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,mjs}\"",
+    "lint": "npm run lint:node-js && npm run lint:react-spa",
+    "lint:node-js": "npm --prefix node-js run lint",
+    "lint:react-spa": "npm --prefix react-spa/frontend run lint && npm --prefix react-spa/backend run lint",
+    "install:all": "npm --prefix node-js install && npm --prefix react-spa/frontend install && npm --prefix react-spa/backend install"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kopai-app/kopai-integration-examples.git"
+  },
+  "license": "MIT"
+}

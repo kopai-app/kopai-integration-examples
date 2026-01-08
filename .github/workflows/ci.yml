@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install root dependencies
+        run: npm install
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Install dependencies (node-js)
+        working-directory: node-js
+        run: npm ci || npm install
+
+      - name: Lint node-js
+        working-directory: node-js
+        run: npm run lint
+
+      - name: Install dependencies (react-spa/frontend)
+        working-directory: react-spa/frontend
+        run: npm ci || npm install
+
+      - name: Lint react-spa/frontend
+        working-directory: react-spa/frontend
+        run: npm run lint
+
+      - name: Install dependencies (react-spa/backend)
+        working-directory: react-spa/backend
+        run: npm ci || npm install
+
+      - name: Lint react-spa/backend
+        working-directory: react-spa/backend
+        run: npm run lint

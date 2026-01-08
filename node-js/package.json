@@ -1,0 +1,21 @@
+{
+  "name": "kopai-node-js-example",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node --import ./instrumentation.mjs server.mjs",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.67.3",
+    "@opentelemetry/sdk-node": "^0.208.0",
+    "cors": "^2.8.5",
+    "express": "^5.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0"
+  }
+}

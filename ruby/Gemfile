@@ -1,0 +1,23 @@
+source 'https://rubygems.org'
+
+# Web framework
+gem 'sinatra'
+gem 'webrick'
+gem 'rackup'
+
+# OpenTelemetry SDK - Core
+gem 'opentelemetry-sdk'
+
+# OpenTelemetry - Traces
+gem 'opentelemetry-exporter-otlp'
+
+# OpenTelemetry - Metrics
+gem 'opentelemetry-metrics-sdk'
+gem 'opentelemetry-exporter-otlp-metrics'
+
+# OpenTelemetry - Logs
+gem 'opentelemetry-logs-sdk'
+gem 'opentelemetry-exporter-otlp-logs'
+
+# Sinatra instrumentation for automatic HTTP tracing
+gem 'opentelemetry-instrumentation-sinatra'

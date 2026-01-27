@@ -1,0 +1,22 @@
+{
+    "name": "kopai/php-otel-example",
+    "description": "PHP OpenTelemetry SDK example",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "open-telemetry/sdk": "^1.0",
+        "open-telemetry/exporter-otlp": "^1.0",
+        "php-http/guzzle7-adapter": "^1.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "nyholm/psr7": "^1.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

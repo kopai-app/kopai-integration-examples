@@ -1,0 +1,12 @@
+{
+  "name": "cpp-otel-example",
+  "version": "1.0.0",
+  "builtin-baseline": "a2a478a93d582a4b395a4dc4b7052bfcb42c1f8e",
+  "dependencies": [
+    {
+      "name": "opentelemetry-cpp",
+      "features": ["otlp-http"]
+    },
+    "cpp-httplib"
+  ]
+}

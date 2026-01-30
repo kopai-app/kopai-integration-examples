@@ -1,0 +1,10 @@
+# Build artifacts
+_build/
+deps/
+
+# Crash dumps
+erl_crash.dump
+
+# Nix
+flake.lock
+.direnv/

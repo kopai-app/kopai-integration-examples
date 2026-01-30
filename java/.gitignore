@@ -1,0 +1,5 @@
+*.class
+target/
+opentelemetry-javaagent.jar
+flake.lock
+.direnv/

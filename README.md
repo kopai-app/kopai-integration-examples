@@ -17,6 +17,7 @@ Working examples for integrating with [Kopai](https://kopai.app) observability p
 | [erlang](./erlang) | Elixir | Hybrid | Traces (SDK), Logs/Metrics (Direct HTTP) |
 | [cpp](./cpp) | C++ | Direct HTTP | Traces, Logs, Metrics |
 | [react-spa](./react-spa) | React + Express | Full SDK | Traces |
+| [evlog](./evlog) | TypeScript (Browser + Hono) | evlog + OTLP | Logs (Wide Events) |
 
 ## Quick Start
 

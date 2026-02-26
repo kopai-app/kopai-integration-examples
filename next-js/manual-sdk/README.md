@@ -17,7 +17,6 @@ Next.js App Router with manual OpenTelemetry SDK — server-side and client-side
 2. Set environment variables:
    ```bash
    export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
-   export OTEL_SERVICE_NAME="server-side"
    ```
 
 3. Install and run:
@@ -41,7 +40,7 @@ npx @kopai/cli traces get <trace-id>
 
 ### Via Dashboard
 
-Open the Kopai dashboard at `http://localhost:3579` (started by `npx @kopai/app start`) to visually inspect traces, spans, and service topology.
+Open the Kopai dashboard at `http://localhost:8000` (started by `npx @kopai/app start`) to visually inspect traces, spans, and service topology.
 
 ## Signals Emitted
 

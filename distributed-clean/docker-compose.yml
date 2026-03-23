@@ -1,0 +1,16 @@
+services:
+  express-api:
+    build: ./express-api
+    ports:
+      - "3001:3001"
+    environment:
+      - ENABLE_PAYMENT_VALIDATION=${ENABLE_PAYMENT_VALIDATION:-false}
+
+  next-app:
+    build: ./next-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - express-api
+    environment:
+      - API_BASE=http://express-api:3001

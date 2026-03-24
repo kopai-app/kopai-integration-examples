@@ -1,2 +1,12 @@
 node_modules/
 .next/
+
+# Agent dotfiles
+.agents/
+.claude/
+.codex/
+.cursor/
+.gemini/
+.tessl/
+.mcp.json
+tessl.json

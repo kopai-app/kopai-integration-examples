@@ -1,0 +1,31 @@
+# syslog-python-rsyslog
+#
+# Demonstrates collecting syslog from an application that writes to /dev/log.
+# rsyslog picks up the messages and forwards them over TCP to the OTel
+# Collector, which exports them via OTLP/HTTP to Kopai.
+#
+# Prerequisites:
+#   Kopai must be running on the host first:
+#     HOST=0.0.0.0 npx @kopai/app start
+
+services:
+  app:
+    build: ./app
+    depends_on:
+      otel-collector:
+        condition: service_started
+    networks:
+      - syslog-rsyslog
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./otel-collector/config.yaml:/etc/otelcol-contrib/config.yaml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - syslog-rsyslog
+
+networks:
+  syslog-rsyslog:
+    driver: bridge

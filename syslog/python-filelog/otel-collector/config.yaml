@@ -1,0 +1,36 @@
+receivers:
+  filelog:
+    include: [/var/log/app.log]
+    start_at: beginning
+    operators:
+      - type: syslog_parser
+        protocol: rfc3164
+      - type: move
+        from: attributes.message
+        to: body
+
+processors:
+  batch: {}
+  resource:
+    attributes:
+      - key: service.name
+        value: "syslog-filelog-demo"
+        action: insert
+      - key: deployment.environment
+        value: "docker-compose-demo"
+        action: insert
+
+exporters:
+  otlphttp/kopai:
+    endpoint: http://host.docker.internal:4318
+    tls:
+      insecure: true
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      processors: [resource, batch]
+      exporters: [otlphttp/kopai, debug]

@@ -38,7 +38,13 @@ export class KopaiExporter extends BaseExporter {
   #flushTimer;
   #maxBufferSize;
 
-  constructor({ endpoint = "http://localhost:4318", serviceName, protocol = "http/json", flushIntervalMs = 5000, maxBufferSize = 50 } = {}) {
+  constructor({
+    endpoint = "http://localhost:4318",
+    serviceName,
+    protocol = "http/json",
+    flushIntervalMs = 5000,
+    maxBufferSize = 50,
+  } = {}) {
     super();
     this.#endpoint = endpoint;
     this.#serviceName = serviceName || "mastra-agent";

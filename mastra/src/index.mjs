@@ -1,6 +1,6 @@
 import { Mastra } from "@mastra/core";
 import { Observability } from "@mastra/observability";
-import { OtelExporter } from "@mastra/otel-exporter";
+import { KopaiExporter } from "./kopai-exporter.mjs";
 import { assistantAgent } from "./agent.mjs";
 
 const mastra = new Mastra({
@@ -10,13 +10,10 @@ const mastra = new Mastra({
       kopai: {
         serviceName: "mastra-agent",
         exporters: [
-          new OtelExporter({
-            provider: {
-              custom: {
-                endpoint: "http://localhost:4318/v1/traces",
-                protocol: "http/json",
-              },
-            },
+          new KopaiExporter({
+            endpoint: "http://localhost:4318",
+            serviceName: "mastra-agent",
+            protocol: "http/json",
           }),
         ],
       },

@@ -36,7 +36,10 @@ Runs a Mastra AI agent (Claude Haiku 4.5) that:
 - Performs arithmetic using the `calculator` tool
 - Handles multi-step prompts combining both tools
 
-Each agent run generates OpenTelemetry traces showing the full decision path: agent invocations, LLM calls, tool executions, and streaming chunks.
+Each agent run generates all 3 observability signals:
+- **Traces** — full agent decision tree with LLM calls and tool executions
+- **Logs** — structured debug/info entries for each agent step
+- **Metrics** — agent duration, tool duration, token usage (input/output)
 
 ## Trace Hierarchy
 
@@ -55,9 +58,10 @@ invoke_agent kopai-assistant              2826ms  (root)
 ## Files
 
 - `instrumentation.mjs` - OpenTelemetry SDK setup with auto-instrumentation
+- `src/kopai-exporter.mjs` - Unified exporter for all 3 signals (traces, logs, metrics)
 - `src/agent.mjs` - Mastra agent definition with Claude model
 - `src/tools.mjs` - Tool definitions (weather + calculator)
-- `src/index.mjs` - Demo runner with Observability + OtelExporter configuration
+- `src/index.mjs` - Demo runner with Observability configuration
 
 ## Validating Telemetry
 
@@ -70,11 +74,14 @@ npx @kopai/cli traces search --service mastra-agent --json
 # Get full trace details (copy traceId from above)
 npx @kopai/cli traces get <traceId> --json
 
-# Search logs
+# Search logs — structured agent activity logs
 npx @kopai/cli logs search --service mastra-agent --json
 
-# Discover available metrics
+# Discover metrics — agent/model/tool duration, token counts
 npx @kopai/cli metrics discover --json
+
+# Search specific metrics
+npx @kopai/cli metrics search --type Gauge --name mastra_agent_duration_ms --json
 ```
 
 ## Creating a Dashboard
@@ -83,20 +90,20 @@ Use this prompt with the Kopai `create-dashboard` skill to generate a dashboard 
 
 > Create a dashboard called "Mastra AI Agent" that shows:
 > - A timeline of agent traces with their durations
-> - Any available metrics from the mastra-agent service
+> - Metrics for agent duration, model duration, and token usage
 > - A log timeline showing agent activity
 >
 > Use `npx @kopai/cli` to discover what metrics and traces are available for the `mastra-agent` service, then build the dashboard accordingly.
 
 ## How It Works
 
-This example uses two complementary layers for full observability:
+The `KopaiExporter` (`src/kopai-exporter.mjs`) is a unified exporter that handles all 3 observability signals through a single configuration:
 
-1. **Mastra Observability + OtelExporter** — Mastra's `@mastra/observability` package generates high-level spans for agent invocations, LLM calls, tool executions, and model steps. The `@mastra/otel-exporter` bridges these to OpenTelemetry, exporting them to Kopai's OTLP/HTTP collector.
+1. **Traces** — Delegates to Mastra's `@mastra/otel-exporter` internally, which converts Mastra's agent/tool/LLM spans into OpenTelemetry spans and exports them via OTLP
+2. **Logs** — Converts Mastra's structured log events to OTLP LogRecord JSON and POSTs to `/v1/logs`
+3. **Metrics** — Converts Mastra's metric events (agent duration, token counts) to OTLP Gauge JSON and POSTs to `/v1/metrics`
 
-2. **OpenTelemetry Node SDK** (`instrumentation.mjs`) — provides auto-instrumentation for HTTP requests, TCP/TLS connections, adding network-level detail to the agent traces.
-
-Together, this gives you both the agent-level view (what the AI decided) and the infrastructure-level view (what HTTP calls were made).
+Additionally, the **OpenTelemetry Node SDK** (`instrumentation.mjs`) provides HTTP-level auto-instrumentation, adding network detail (API calls to Anthropic, tool HTTP requests) to the traces.
 
 ## Learn More
 

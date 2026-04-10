@@ -27,7 +27,8 @@ app.post("/cart", async (req, res) => {
   const { productId, quantity } = req.body;
   const product = products.find((p) => p.id === Number(productId));
   if (!product) return res.status(404).json({ error: "Product not found" });
-  if (product.stock < quantity) return res.status(400).json({ error: "Insufficient stock" });
+  if (product.stock < quantity)
+    return res.status(400).json({ error: "Insufficient stock" });
 
   if (process.env.ENABLE_PAYMENT_VALIDATION === "true") {
     await validatePayment();

@@ -1,0 +1,46 @@
+receivers:
+  journald:
+    directory: "${JOURNAL_DIR}"
+    matches:
+      - _SYSTEMD_USER_UNIT: journald-native-demo.service
+    priority: info
+    operators:
+      - type: severity_parser
+        parse_from: body.PRIORITY
+        mapping:
+          error: "3"
+          warn: "4"
+          info: "6"
+          debug: "7"
+      - type: move
+        from: body.MESSAGE
+        to: attributes.message
+      - type: move
+        from: attributes.message
+        to: body
+
+processors:
+  batch: {}
+  resource:
+    attributes:
+      - key: service.name
+        value: "journald-native-demo"
+        action: insert
+      - key: deployment.environment
+        value: "native-demo"
+        action: insert
+
+exporters:
+  otlphttp/kopai:
+    endpoint: http://localhost:4318
+    tls:
+      insecure: true
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    logs:
+      receivers: [journald]
+      processors: [resource, batch]
+      exporters: [otlphttp/kopai, debug]

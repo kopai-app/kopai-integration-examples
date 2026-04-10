@@ -1,0 +1,38 @@
+# syslog-python-filelog
+#
+# Demonstrates collecting syslog-formatted lines from a plain log file.
+# The Python app writes RFC 3164 lines to /var/log/app.log. The OTel
+# Collector tails that file using the filelog receiver with a syslog_parser
+# operator and exports via OTLP/HTTP to Kopai.
+#
+# Prerequisites:
+#   Kopai must be running on the host first:
+#     HOST=0.0.0.0 npx @kopai/app start
+
+services:
+  app:
+    build: ./app
+    volumes:
+      - app-logs:/var/log
+    depends_on:
+      otel-collector:
+        condition: service_started
+    networks:
+      - syslog-filelog
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./otel-collector/config.yaml:/etc/otelcol-contrib/config.yaml
+      - app-logs:/var/log
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - syslog-filelog
+
+volumes:
+  app-logs:
+
+networks:
+  syslog-filelog:
+    driver: bridge

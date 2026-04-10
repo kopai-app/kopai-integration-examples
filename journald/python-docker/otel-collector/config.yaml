@@ -1,0 +1,60 @@
+receivers:
+  filelog:
+    include: [/var/log/app/journald.log]
+    start_at: beginning
+    operators:
+      - type: json_parser
+      - type: move
+        from: attributes.MESSAGE
+        to: body
+      - type: move
+        from: attributes.PRIORITY
+        to: attributes["syslog.priority"]
+      - type: move
+        from: attributes.SYSLOG_IDENTIFIER
+        to: attributes["syslog.identifier"]
+      - type: move
+        from: attributes._HOSTNAME
+        to: attributes["host.name"]
+      - type: move
+        from: attributes._PID
+        to: attributes["process.pid"]
+      - type: move
+        from: attributes.__REALTIME_TIMESTAMP
+        to: attributes["journald.realtime_timestamp"]
+      - type: move
+        from: attributes.COMPONENT
+        to: attributes["component"]
+      - type: severity_parser
+        parse_from: attributes["syslog.priority"]
+        mapping:
+          error: "3"
+          warn: "4"
+          info: "6"
+          debug: "7"
+
+processors:
+  batch: {}
+  resource:
+    attributes:
+      - key: service.name
+        value: "journald-docker-demo"
+        action: insert
+      - key: deployment.environment
+        value: "docker-compose-demo"
+        action: insert
+
+exporters:
+  otlphttp/kopai:
+    endpoint: http://host.docker.internal:4318
+    tls:
+      insecure: true
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      processors: [resource, batch]
+      exporters: [otlphttp/kopai, debug]

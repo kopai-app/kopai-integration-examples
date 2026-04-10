@@ -1,0 +1,41 @@
+# journald-python-docker
+#
+# Demonstrates collecting journald-format JSON logs from a file.
+# The Python app writes JSON lines using real journald field names
+# (MESSAGE, PRIORITY, SYSLOG_IDENTIFIER, etc.) to a shared volume.
+# The OTel Collector tails the file, parses the JSON, and exports
+# via OTLP/HTTP to Kopai.
+#
+# Cross-platform: works on Linux, Mac, and Windows.
+#
+# Prerequisites:
+#   Kopai must be running on the host first:
+#     HOST=0.0.0.0 npx @kopai/app start
+
+services:
+  app:
+    build: ./app
+    volumes:
+      - app-logs:/var/log/app
+    depends_on:
+      otel-collector:
+        condition: service_started
+    networks:
+      - journald-docker
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./otel-collector/config.yaml:/etc/otelcol-contrib/config.yaml
+      - app-logs:/var/log/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - journald-docker
+
+volumes:
+  app-logs:
+
+networks:
+  journald-docker:
+    driver: bridge

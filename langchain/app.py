@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import time
 
 # Suppress noisy LangSmith warnings (e.g. "Run compression is not enabled")
@@ -56,6 +57,9 @@ print('Chat started. Type "exit" or "quit" to stop.\n')
 try:
     while True:
         user_input = input("You: ").strip()
+        if not sys.stdin.isatty():
+            # Echo input when stdin is piped so the transcript stays readable.
+            print(user_input)
         if not user_input:
             continue
         if user_input.lower() in ("exit", "quit"):

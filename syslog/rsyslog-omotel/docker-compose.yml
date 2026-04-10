@@ -1,0 +1,22 @@
+# rsyslog-omotel
+#
+# Demonstrates rsyslog's native omotel output module exporting logs
+# directly to Kopai via OTLP/HTTP — no OpenTelemetry Collector needed.
+#
+# The omotel module is built from source (first build takes ~5 min).
+#
+# Prerequisites:
+#   Kopai must be running on the host first:
+#     HOST=0.0.0.0 npx @kopai/app start
+
+services:
+  app:
+    build: ./app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - syslog-omotel
+
+networks:
+  syslog-omotel:
+    driver: bridge

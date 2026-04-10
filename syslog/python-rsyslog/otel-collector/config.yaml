@@ -1,0 +1,35 @@
+receivers:
+  syslog:
+    tcp:
+      listen_address: "0.0.0.0:54527"
+    protocol: rfc3164
+    operators:
+      - type: move
+        from: attributes.message
+        to: body
+
+processors:
+  batch: {}
+  resource:
+    attributes:
+      - key: service.name
+        value: "syslog-rsyslog-demo"
+        action: insert
+      - key: deployment.environment
+        value: "docker-compose-demo"
+        action: insert
+
+exporters:
+  otlphttp/kopai:
+    endpoint: http://host.docker.internal:4318
+    tls:
+      insecure: true
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    logs:
+      receivers: [syslog]
+      processors: [resource, batch]
+      exporters: [otlphttp/kopai, debug]

@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: promptyard
+      POSTGRES_PASSWORD: promptyard
+      POSTGRES_DB: promptyard
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d:ro
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U promptyard -d promptyard"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgres://promptyard:promptyard@db:5432/promptyard?sslmode=disable
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OTEL_SERVICE_NAME: promptyard-go
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://host.docker.internal:4318}
+      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-}
+      OTEL_EXPORTER_OTLP_INSECURE: ${OTEL_EXPORTER_OTLP_INSECURE:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: http://localhost:3001
+        VITE_OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+        VITE_OTEL_EXPORTER_OTLP_HEADERS: ${VITE_OTEL_EXPORTER_OTLP_HEADERS:-}
+    environment:
+      KOPAI_OTLP_TARGET: http://host.docker.internal:4318
+    ports:
+      - "5174:5173"
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/index.html:/app/index.html:ro
+      - ./frontend/vite.config.js:/app/vite.config.js:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - backend
+
+volumes:
+  dbdata:

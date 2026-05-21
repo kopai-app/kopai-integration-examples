@@ -24,8 +24,7 @@ async function request(path, options = {}) {
       }
     }
     const message =
-      (body && (body.error || body.message)) ||
-      `Request failed: ${res.status}`;
+      (body && (body.error || body.message)) || `Request failed: ${res.status}`;
     const err = new Error(message);
     err.status = res.status;
     err.body = body;

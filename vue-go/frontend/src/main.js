@@ -1,0 +1,11 @@
+import { setupInstrumentation } from "./instrumentation.js";
+setupInstrumentation();
+
+import { createApp } from "vue";
+import App from "./App.vue";
+import { router } from "./router.js";
+import "./styles.css";
+
+const app = createApp(App);
+app.use(router);
+app.mount("#app");
